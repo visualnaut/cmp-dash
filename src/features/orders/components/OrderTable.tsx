@@ -3,11 +3,7 @@ import { Order } from "../../../types/order";
 import { StatusBadge } from "../../../components/ui/StatusBadge";
 import { PaymentBadge } from "../../../components/ui/PaymentBadge";
 import { AttentionBadge } from "../../../components/ui/AttentionBadge";
-import {
-  isSLABreached,
-  getMinutesSinceOrder,
-  formatTimeAgo,
-} from "../../../lib/sla";
+import { isSLABreached, formatTimeAgo } from "../../../lib/sla";
 import { ArrowUp, ArrowDown, ArrowUpDown, ChevronRight } from "lucide-react";
 
 export type SortColumn = "id" | "orderTime" | "amount";
@@ -131,7 +127,6 @@ export const OrderTable: React.FC<OrderTableProps> = ({
           <tbody className="divide-y divide-base-200 text-xs sm:text-sm">
             {orders.map((order) => {
               const isBreached = isSLABreached(order, now);
-              const minutes = getMinutesSinceOrder(order, now);
               const isSelected = selectedOrderId === order.id;
 
               return (
@@ -151,9 +146,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                   <td className="py-4 pl-5 font-extrabold text-base-content whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span>{order.id}</span>
-                      {isBreached && (
-                        <AttentionBadge minutesElapsed={minutes} />
-                      )}
+                      {isBreached && <AttentionBadge />}
                     </div>
                   </td>
 
@@ -217,7 +210,6 @@ export const OrderTable: React.FC<OrderTableProps> = ({
       >
         {orders.map((order) => {
           const isBreached = isSLABreached(order, now);
-          const minutes = getMinutesSinceOrder(order, now);
           const isSelected = selectedOrderId === order.id;
 
           return (
@@ -264,7 +256,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
               </div>
 
               {/* Needs Attention Warning */}
-              {isBreached && <AttentionBadge minutesElapsed={minutes} />}
+              {isBreached && <AttentionBadge />}
 
               {/* Service & Qty */}
               <div className="flex justify-between items-center text-xs p-2.5 bg-base-200/50 rounded-xl">

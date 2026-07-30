@@ -40,7 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       aria-label="Sidebar navigation"
-      className="w-64 bg-base-100 border-r border-base-200 flex flex-col justify-between h-screen sticky top-0 shrink-0 hidden md:flex"
+      className="w-64 bg-base-100 border-r border-base-200 flex flex-col justify-between h-screen sticky top-0 shrink-0 md:flex"
     >
       <div>
         {/* Brand Header */}

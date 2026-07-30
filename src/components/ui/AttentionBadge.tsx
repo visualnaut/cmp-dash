@@ -1,13 +1,7 @@
 import React from "react";
 import { AlertCircle } from "lucide-react";
 
-interface AttentionBadgeProps {
-  minutesElapsed: number;
-}
-
-export const AttentionBadge: React.FC<AttentionBadgeProps> = ({
-  minutesElapsed,
-}) => {
+export const AttentionBadge: React.FC = () => {
   return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 shadow-xs animate-pulse">
       <AlertCircle

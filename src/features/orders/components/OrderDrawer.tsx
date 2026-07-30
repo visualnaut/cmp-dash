@@ -1,11 +1,20 @@
-import React, { useEffect } from 'react';
-import { Order, OrderStatus } from '../../../types/order';
-import { StatusBadge } from '../../../components/ui/StatusBadge';
-import { PaymentBadge } from '../../../components/ui/PaymentBadge';
-import { AttentionBadge } from '../../../components/ui/AttentionBadge';
-import { isSLABreached, getMinutesSinceOrder, formatTimeAgo } from '../../../lib/sla';
-import { getNextStatuses, canCancel } from '../../../lib/order-state-machine';
-import { X, Maximize2, Clock, User, DoorClosed, DollarSign, Package, AlertCircle } from 'lucide-react';
+import React, { useEffect } from "react";
+import { Order, OrderStatus } from "../../../types/order";
+import { StatusBadge } from "../../../components/ui/StatusBadge";
+import { PaymentBadge } from "../../../components/ui/PaymentBadge";
+import { AttentionBadge } from "../../../components/ui/AttentionBadge";
+import { isSLABreached, formatTimeAgo } from "../../../lib/sla";
+import { getNextStatuses, canCancel } from "../../../lib/order-state-machine";
+import {
+  X,
+  Maximize2,
+  Clock,
+  User,
+  DoorClosed,
+  DollarSign,
+  Package,
+  AlertCircle,
+} from "lucide-react";
 
 interface OrderDrawerProps {
   order: Order | null;
@@ -28,20 +37,21 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen || !order) return null;
 
   const now = new Date();
   const isBreached = isSLABreached(order, now);
-  const minutesElapsed = getMinutesSinceOrder(order, now);
-  const allowedNextStatuses = getNextStatuses(order.status).filter((s) => s !== 'Cancelled');
+  const allowedNextStatuses = getNextStatuses(order.status).filter(
+    (s) => s !== "Cancelled",
+  );
   const showCancelButton = canCancel(order.status);
 
   return (
@@ -64,7 +74,10 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
           <div className="p-6 border-b border-base-200 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span id="drawer-order-id" className="font-extrabold text-xl text-base-content">
+                <span
+                  id="drawer-order-id"
+                  className="font-extrabold text-xl text-base-content"
+                >
                   {order.id}
                 </span>
                 <span className="px-2.5 py-1 rounded-lg bg-base-200 font-bold text-xs">
@@ -94,9 +107,15 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
 
             {/* Attention Alert banner if breached */}
             {isBreached && (
-              <div role="region" aria-live="assertive" className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between">
-                <AttentionBadge minutesElapsed={minutesElapsed} />
-                <span className="text-[11px] text-rose-700 font-semibold">Requires attention</span>
+              <div
+                role="region"
+                aria-live="assertive"
+                className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between"
+              >
+                <AttentionBadge />
+                <span className="text-[11px] text-rose-700 font-semibold">
+                  Requires attention
+                </span>
               </div>
             )}
           </div>
@@ -127,57 +146,99 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
 
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-base-200 rounded-lg text-base-content/60" aria-hidden="true">
+                  <div
+                    className="p-2 bg-base-200 rounded-lg text-base-content/60"
+                    aria-hidden="true"
+                  >
                     <User className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs text-base-content/60 font-medium">Guest Name</p>
-                    <p className="font-bold text-base-content">{order.guestName}</p>
+                    <p className="text-xs text-base-content/60 font-medium">
+                      Guest Name
+                    </p>
+                    <p className="font-bold text-base-content">
+                      {order.guestName}
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-base-200 rounded-lg text-base-content/60" aria-hidden="true">
+                  <div
+                    className="p-2 bg-base-200 rounded-lg text-base-content/60"
+                    aria-hidden="true"
+                  >
                     <DoorClosed className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs text-base-content/60 font-medium">Room Number</p>
-                    <p className="font-bold text-base-content">{order.roomNumber}</p>
+                    <p className="text-xs text-base-content/60 font-medium">
+                      Room Number
+                    </p>
+                    <p className="font-bold text-base-content">
+                      {order.roomNumber}
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-base-200 rounded-lg text-base-content/60" aria-hidden="true">
+                  <div
+                    className="p-2 bg-base-200 rounded-lg text-base-content/60"
+                    aria-hidden="true"
+                  >
                     <Package className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs text-base-content/60 font-medium">Requested Service</p>
+                    <p className="text-xs text-base-content/60 font-medium">
+                      Requested Service
+                    </p>
                     <p className="font-bold text-base-content">
-                      {order.service} <span className="font-normal text-base-content/60">(Qty: {order.quantity})</span>
+                      {order.service}{" "}
+                      <span className="font-normal text-base-content/60">
+                        (Qty: {order.quantity})
+                      </span>
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-base-200 rounded-lg text-base-content/60" aria-hidden="true">
+                  <div
+                    className="p-2 bg-base-200 rounded-lg text-base-content/60"
+                    aria-hidden="true"
+                  >
                     <DollarSign className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs text-base-content/60 font-medium">Total Amount</p>
+                    <p className="text-xs text-base-content/60 font-medium">
+                      Total Amount
+                    </p>
                     <p className="font-extrabold text-base-content">
-                      {order.amount === 0 ? <span className="text-emerald-600">Complimentary ($0)</span> : `$${order.amount}`}
+                      {order.amount === 0 ? (
+                        <span className="text-emerald-600">
+                          Complimentary ($0)
+                        </span>
+                      ) : (
+                        `$${order.amount}`
+                      )}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-base-200 rounded-lg text-base-content/60" aria-hidden="true">
+                  <div
+                    className="p-2 bg-base-200 rounded-lg text-base-content/60"
+                    aria-hidden="true"
+                  >
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs text-base-content/60 font-medium">Order Placed At</p>
+                    <p className="text-xs text-base-content/60 font-medium">
+                      Order Placed At
+                    </p>
                     <p className="font-bold text-base-content">
-                      {new Date(order.orderTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({formatTimeAgo(order.orderTime, now)})
+                      {new Date(order.orderTime).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      ({formatTimeAgo(order.orderTime, now)})
                     </p>
                   </div>
                 </div>
@@ -193,7 +254,9 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
                 {order.specialRequest ? (
                   `"${order.specialRequest}"`
                 ) : (
-                  <span className="text-base-content/40 not-italic">No special request provided for this order.</span>
+                  <span className="text-base-content/40 not-italic">
+                    No special request provided for this order.
+                  </span>
                 )}
               </div>
             </div>
@@ -202,7 +265,9 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
           {/* Drawer Footer Actions */}
           <div className="p-6 border-t border-base-200 bg-base-100 space-y-3">
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-base-content/60">Operational Actions</p>
+              <p className="text-xs font-semibold text-base-content/60">
+                Operational Actions
+              </p>
               <div className="flex flex-col gap-2">
                 {allowedNextStatuses.map((nextStatus) => (
                   <button
@@ -213,7 +278,12 @@ export const OrderDrawer: React.FC<OrderDrawerProps> = ({
                     aria-label={`Move order ${order.id} status to ${nextStatus}`}
                     className="btn btn-primary font-bold w-full rounded-xl gap-2 shadow-xs"
                   >
-                    {isUpdating && <span className="loading loading-spinner loading-xs" aria-hidden="true" />}
+                    {isUpdating && (
+                      <span
+                        className="loading loading-spinner loading-xs"
+                        aria-hidden="true"
+                      />
+                    )}
                     Move Order to &quot;{nextStatus}&quot;
                   </button>
                 ))}

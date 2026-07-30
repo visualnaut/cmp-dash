@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { useOrder, useUpdateOrderStatus, useUpdatePaymentStatus } from '../../hooks/useOrders';
-import { StatusBadge } from '../../components/ui/StatusBadge';
-import { PaymentBadge } from '../../components/ui/PaymentBadge';
-import { AttentionBadge } from '../../components/ui/AttentionBadge';
-import { ConfirmModal } from '../../components/ui/ConfirmModal';
-import { LoadingState } from '../../components/feedback/LoadingState';
-import { ErrorState } from '../../components/feedback/ErrorState';
-import { isSLABreached, getMinutesSinceOrder, formatTimeAgo } from '../../lib/sla';
-import { getNextStatuses, canCancel, canMarkPaymentPaid } from '../../lib/order-state-machine';
-import { OrderStatus } from '../../types/order';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import {
+  useOrder,
+  useUpdateOrderStatus,
+  useUpdatePaymentStatus,
+} from "../../hooks/useOrders";
+import { StatusBadge } from "../../components/ui/StatusBadge";
+import { PaymentBadge } from "../../components/ui/PaymentBadge";
+import { AttentionBadge } from "../../components/ui/AttentionBadge";
+import { ConfirmModal } from "../../components/ui/ConfirmModal";
+import { LoadingState } from "../../components/feedback/LoadingState";
+import { ErrorState } from "../../components/feedback/ErrorState";
+import { isSLABreached, formatTimeAgo } from "../../lib/sla";
+import {
+  getNextStatuses,
+  canCancel,
+  canMarkPaymentPaid,
+} from "../../lib/order-state-machine";
+import { OrderStatus } from "../../types/order";
 import {
   ArrowLeft,
   User,
@@ -21,15 +29,26 @@ import {
   AlertCircle,
   CreditCard,
   Check,
-} from 'lucide-react';
+} from "lucide-react";
 
-const ORDER_STEPS: OrderStatus[] = ['New', 'Acknowledged', 'In Progress', 'Completed'];
+const ORDER_STEPS: OrderStatus[] = [
+  "New",
+  "Acknowledged",
+  "In Progress",
+  "Completed",
+];
 
 export const OrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: order, isLoading, isError, error, refetch } = useOrder(id || '');
+  const {
+    data: order,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useOrder(id || "");
   const updateStatusMutation = useUpdateOrderStatus();
   const updatePaymentMutation = useUpdatePaymentStatus();
 
@@ -43,7 +62,7 @@ export const OrderDetailPage: React.FC = () => {
     return (
       <div className="space-y-4">
         <button
-          onClick={() => navigate('/orders')}
+          onClick={() => navigate("/orders")}
           className="btn btn-sm btn-ghost gap-2 font-semibold text-base-content/70"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -51,7 +70,11 @@ export const OrderDetailPage: React.FC = () => {
         </button>
         <ErrorState
           title="Order Not Found"
-          message={error instanceof Error ? error.message : `Order ${id} could not be retrieved.`}
+          message={
+            error instanceof Error
+              ? error.message
+              : `Order ${id} could not be retrieved.`
+          }
           onRetry={() => refetch()}
         />
       </div>
@@ -60,8 +83,9 @@ export const OrderDetailPage: React.FC = () => {
 
   const now = new Date();
   const isBreached = isSLABreached(order, now);
-  const minutesElapsed = getMinutesSinceOrder(order, now);
-  const allowedNextStatuses = getNextStatuses(order.status).filter((s) => s !== 'Cancelled');
+  const allowedNextStatuses = getNextStatuses(order.status).filter(
+    (s) => s !== "Cancelled",
+  );
   const showCancelButton = canCancel(order.status);
   const showMarkPaid = canMarkPaymentPaid(order.paymentStatus);
 
@@ -73,15 +97,15 @@ export const OrderDetailPage: React.FC = () => {
   };
 
   const handleMarkPaid = () => {
-    updatePaymentMutation.mutate({ id: order.id, paymentStatus: 'Paid' });
+    updatePaymentMutation.mutate({ id: order.id, paymentStatus: "Paid" });
   };
 
   const handleConfirmCancel = () => {
     updateStatusMutation.mutate(
-      { id: order.id, status: 'Cancelled' },
+      { id: order.id, status: "Cancelled" },
       {
         onSuccess: () => setIsCancelModalOpen(false),
-      }
+      },
     );
   };
 
@@ -90,26 +114,29 @@ export const OrderDetailPage: React.FC = () => {
       {/* Top Back Navigation */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => navigate('/orders')}
+          onClick={() => navigate("/orders")}
           className="btn btn-sm btn-ghost gap-2 font-bold text-base-content/70 hover:text-base-content"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Orders List</span>
         </button>
-        <span className="text-xs text-base-content/50 font-medium">Order Detail View</span>
+        <span className="text-xs text-base-content/50 font-medium">
+          Order Detail View
+        </span>
       </div>
 
       {/* Attention Alert banner */}
       {isBreached && (
         <div className="card bg-rose-50 border border-rose-200 p-4 rounded-2xl flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
-            <AttentionBadge minutesElapsed={minutesElapsed} />
+            <AttentionBadge />
             <p className="text-xs font-semibold text-rose-800 hidden sm:block">
-              This order has been waiting in &quot;New&quot; status for over 15 minutes.
+              This order has been waiting in &quot;New&quot; status for over 15
+              minutes.
             </p>
           </div>
           <button
-            onClick={() => handleUpdateStatus('Acknowledged')}
+            onClick={() => handleUpdateStatus("Acknowledged")}
             disabled={updateStatusMutation.isPending}
             className="btn btn-xs bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg border-none"
           >
@@ -131,7 +158,10 @@ export const OrderDetailPage: React.FC = () => {
               </span>
             </div>
             <p className="text-sm font-semibold text-base-content/70 mt-1">
-              Guest: <span className="text-base-content font-bold">{order.guestName}</span>
+              Guest:{" "}
+              <span className="text-base-content font-bold">
+                {order.guestName}
+              </span>
             </p>
           </div>
 
@@ -142,7 +172,7 @@ export const OrderDetailPage: React.FC = () => {
         </div>
 
         {/* Order Lifecycle Progress Timeline */}
-        {order.status !== 'Cancelled' ? (
+        {order.status !== "Cancelled" ? (
           <div className="space-y-3 py-2">
             <p className="text-xs font-bold uppercase tracking-wider text-base-content/50">
               Lifecycle Progress
@@ -157,21 +187,23 @@ export const OrderDetailPage: React.FC = () => {
                     <div
                       className={`h-2 rounded-full transition-all duration-300 ${
                         isCurrent
-                          ? 'bg-primary ring-2 ring-primary/30'
+                          ? "bg-primary ring-2 ring-primary/30"
                           : isPassed
-                          ? 'bg-primary/80'
-                          : 'bg-base-200'
+                            ? "bg-primary/80"
+                            : "bg-base-200"
                       }`}
                     />
                     <div className="flex items-center justify-center gap-1">
-                      {isPassed && <Check className="w-3 h-3 text-primary shrink-0" />}
+                      {isPassed && (
+                        <Check className="w-3 h-3 text-primary shrink-0" />
+                      )}
                       <span
                         className={`text-xs font-bold ${
                           isCurrent
-                            ? 'text-primary font-extrabold'
+                            ? "text-primary font-extrabold"
                             : isPassed
-                            ? 'text-base-content font-semibold'
-                            : 'text-base-content/40'
+                              ? "text-base-content font-semibold"
+                              : "text-base-content/40"
                         }`}
                       >
                         {stepName}
@@ -187,7 +219,10 @@ export const OrderDetailPage: React.FC = () => {
             <AlertCircle className="w-5 h-5 text-slate-500 shrink-0" />
             <div>
               <p className="font-bold text-sm">Order Cancelled</p>
-              <p className="text-xs">This order is in a terminal cancelled state and cannot be processed further.</p>
+              <p className="text-xs">
+                This order is in a terminal cancelled state and cannot be
+                processed further.
+              </p>
             </div>
           </div>
         )}
@@ -205,8 +240,12 @@ export const OrderDetailPage: React.FC = () => {
                   <Package className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-base-content/50 font-medium">Service Requested</p>
-                  <p className="font-extrabold text-base-content text-base">{order.service}</p>
+                  <p className="text-xs text-base-content/50 font-medium">
+                    Service Requested
+                  </p>
+                  <p className="font-extrabold text-base-content text-base">
+                    {order.service}
+                  </p>
                 </div>
               </div>
 
@@ -215,8 +254,12 @@ export const OrderDetailPage: React.FC = () => {
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-base-content/50 font-medium">Quantity</p>
-                  <p className="font-extrabold text-base-content">{order.quantity} unit(s)</p>
+                  <p className="text-xs text-base-content/50 font-medium">
+                    Quantity
+                  </p>
+                  <p className="font-extrabold text-base-content">
+                    {order.quantity} unit(s)
+                  </p>
                 </div>
               </div>
 
@@ -225,12 +268,14 @@ export const OrderDetailPage: React.FC = () => {
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-base-content/50 font-medium">Order Placed At</p>
+                  <p className="text-xs text-base-content/50 font-medium">
+                    Order Placed At
+                  </p>
                   <p className="font-bold text-base-content">
                     {new Date(order.orderTime).toLocaleString(undefined, {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })}{' '}
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}{" "}
                     ({formatTimeAgo(order.orderTime, now)})
                   </p>
                 </div>
@@ -249,8 +294,12 @@ export const OrderDetailPage: React.FC = () => {
                   <User className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-base-content/50 font-medium">Guest Name</p>
-                  <p className="font-bold text-base-content">{order.guestName}</p>
+                  <p className="text-xs text-base-content/50 font-medium">
+                    Guest Name
+                  </p>
+                  <p className="font-bold text-base-content">
+                    {order.guestName}
+                  </p>
                 </div>
               </div>
 
@@ -259,8 +308,12 @@ export const OrderDetailPage: React.FC = () => {
                   <DoorClosed className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-base-content/50 font-medium">Room Location</p>
-                  <p className="font-bold text-base-content">{order.roomNumber}</p>
+                  <p className="text-xs text-base-content/50 font-medium">
+                    Room Location
+                  </p>
+                  <p className="font-bold text-base-content">
+                    {order.roomNumber}
+                  </p>
                 </div>
               </div>
 
@@ -269,10 +322,14 @@ export const OrderDetailPage: React.FC = () => {
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-base-content/50 font-medium">Order Total</p>
+                  <p className="text-xs text-base-content/50 font-medium">
+                    Order Total
+                  </p>
                   <p className="font-extrabold text-base text-base-content">
                     {order.amount === 0 ? (
-                      <span className="text-emerald-600">Complimentary ($0)</span>
+                      <span className="text-emerald-600">
+                        Complimentary ($0)
+                      </span>
                     ) : (
                       `$${order.amount}`
                     )}
@@ -292,7 +349,9 @@ export const OrderDetailPage: React.FC = () => {
             {order.specialRequest ? (
               `"${order.specialRequest}"`
             ) : (
-              <span className="text-base-content/40 italic">No special instructions provided by the guest.</span>
+              <span className="text-base-content/40 italic">
+                No special instructions provided by the guest.
+              </span>
             )}
           </div>
         </div>
@@ -300,7 +359,9 @@ export const OrderDetailPage: React.FC = () => {
 
       {/* Action Bar Card */}
       <div className="card bg-base-100 border border-base-200 p-6 rounded-2xl shadow-xs space-y-4">
-        <h3 className="text-sm font-bold text-base-content">Staff Management Actions</h3>
+        <h3 className="text-sm font-bold text-base-content">
+          Staff Management Actions
+        </h3>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Status Advancement Buttons */}
@@ -311,7 +372,9 @@ export const OrderDetailPage: React.FC = () => {
               disabled={updateStatusMutation.isPending}
               className="btn btn-primary font-bold shadow-xs rounded-xl gap-2 text-sm"
             >
-              {updateStatusMutation.isPending && <span className="loading loading-spinner loading-xs" />}
+              {updateStatusMutation.isPending && (
+                <span className="loading loading-spinner loading-xs" />
+              )}
               Advance Status to &quot;{nextStatus}&quot;
             </button>
           ))}
