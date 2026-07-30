@@ -1,5 +1,5 @@
-import React from 'react';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import React from "react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 interface ErrorStateProps {
   title?: string;
@@ -8,12 +8,12 @@ interface ErrorStateProps {
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
-  title = 'Unable to load orders',
-  message = 'Please check your connection or click retry to load the data again.',
+  title = "Unable to load orders",
+  message = "Please check your connection or click retry to load the data again.",
   onRetry,
 }) => {
   return (
-    <div className="card bg-rose-50 border border-rose-200 p-8 text-center max-w-lg mx-auto my-8 rounded-2xl">
+    <div className="card bg-rose-50 border border-rose-200 p-8 text-center my-8 rounded-2xl">
       <div className="flex justify-center mb-4">
         <div className="p-3 bg-rose-100 rounded-full text-rose-600">
           <AlertCircle className="w-8 h-8" />

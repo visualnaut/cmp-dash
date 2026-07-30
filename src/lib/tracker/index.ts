@@ -6,6 +6,9 @@ export function createTracker(plugins: TrackerPlugin[]): Tracker {
     track(eventName, properties) {
       plugins.forEach((plugin) => plugin.track(eventName, properties));
     },
+    captureError(error) {
+      plugins.forEach((plugin) => plugin.captureError(error));
+    }
   };
 }
 

@@ -9,4 +9,7 @@ export const consolePlugin: TrackerPlugin = {
       properties
     );
   },
+  captureError(error) {
+    console.error('%c[Tracker] Error Captured:', 'color: #ef4444; font-weight: bold;', error);
+  }
 };

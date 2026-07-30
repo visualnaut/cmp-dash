@@ -69,6 +69,7 @@ export function useUpdateOrderStatus() {
       toast.error('Failed to update order status', {
         description: error instanceof Error ? error.message : 'An unexpected error occurred',
       });
+      tracker.captureError(error instanceof Error ? error : new Error('Unknown error in useUpdateOrderStatus'));
     },
   });
 }
@@ -101,6 +102,8 @@ export function useUpdatePaymentStatus() {
       toast.error('Failed to update payment status', {
         description: error instanceof Error ? error.message : 'An unexpected error occurred',
       });
+
+      tracker.captureError(error instanceof Error ? error : new Error('Unknown error in useUpdatePaymentStatus'));
     },
   });
 }

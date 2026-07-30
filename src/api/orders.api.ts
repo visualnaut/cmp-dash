@@ -34,6 +34,23 @@ export function setAllSimulatedErrors(enabled: boolean) {
   };
 }
 
+function adjustTimestamps(orders: Order[]): Order[] {
+  if (orders.length === 0) return orders;
+  const now = new Date().getTime();
+  // Find the most recent order time in the mock data
+  const maxTime = Math.max(...orders.map((o) => new Date(o.orderTime).getTime()));
+  // Shift all timestamps so the most recent order is 2 minutes ago
+  const offset = now - (2 * 60 * 1000) - maxTime;
+
+  return orders.map((order) => {
+    const origTime = new Date(order.orderTime).getTime();
+    return {
+      ...order,
+      orderTime: new Date(origTime + offset).toISOString(),
+    };
+  });
+}
+
 export async function ensureOrdersLoaded(): Promise<Order[]> {
   if (!ordersStore) {
     try {
@@ -41,14 +58,15 @@ export async function ensureOrdersLoaded(): Promise<Order[]> {
         const res = await fetch('/mocks/orders.json');
         if (res.ok) {
           const data: Order[] = await res.json();
-          ordersStore = data;
+          ordersStore = adjustTimestamps(data);
           return ordersStore;
         }
       }
     } catch {
       // Fallback to static seed data
     }
-    ordersStore = JSON.parse(JSON.stringify(seedData)) as Order[];
+    const data = JSON.parse(JSON.stringify(seedData)) as Order[];
+    ordersStore = adjustTimestamps(data);
   }
   return ordersStore;
 }
@@ -129,6 +147,7 @@ export async function fetchServiceTypes(): Promise<string[]> {
 
 export async function resetOrdersStore(): Promise<Order[]> {
   await delay(200);
-  ordersStore = JSON.parse(JSON.stringify(seedData)) as Order[];
+  const data = JSON.parse(JSON.stringify(seedData)) as Order[];
+  ordersStore = adjustTimestamps(data);
   return JSON.parse(JSON.stringify(ordersStore));
 }

@@ -1,11 +1,12 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate } from 'react-router';
 import { SectionErrorBoundary } from '../../components/feedback/SectionErrorBoundary';
 import { MetricsSection } from './components/MetricsSection';
 import { TopSellingServicesList } from './components/TopSellingServicesList';
 import { OpsHealthCheckSection } from './components/OpsHealthCheckSection';
+import { NeedsAttentionBanner } from './components/NeedsAttentionBanner';
 import { useOpsHealthCheck } from '../../hooks/useDashboard';
-import { AlertCircle, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -34,27 +35,7 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Urgent Attention Alert Card */}
-      <div className="card bg-rose-500 text-white p-5 rounded-2xl shadow-lg border border-rose-600 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-white/20 rounded-xl">
-            <AlertCircle className="w-7 h-7" />
-          </div>
-          <div>
-            <h3 className="font-extrabold text-base">
-              Monitor Orders Needing Immediate Attention (&gt;15 min waiting in New status)
-            </h3>
-            <p className="text-xs text-white/90">
-              Action required to maintain guest satisfaction standards.
-            </p>
-          </div>
-        </div>
-        <Link
-          to="/orders?attention=true"
-          className="btn btn-sm bg-white text-rose-700 hover:bg-rose-50 border-none font-bold rounded-xl shadow-xs"
-        >
-          Review Priority Orders
-        </Link>
-      </div>
+      <NeedsAttentionBanner />
 
       {/* 6 Key Operational Metrics Cards Section */}
       <SectionErrorBoundary title="Metrics Overview Error">
