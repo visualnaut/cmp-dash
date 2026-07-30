@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Custom utility styles and smooth transitions */
+body {
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+/* Pulse animation for SLA breached items */
+@keyframes sla-pulse {
+  0%, 100% {
+    border-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    border-color: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 12px 2px rgba(239, 68, 68, 0.3);
+  }
+}
+
+.sla-breached {
+  animation: sla-pulse 2s infinite ease-in-out;
+}
